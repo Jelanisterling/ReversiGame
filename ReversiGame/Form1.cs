@@ -20,13 +20,16 @@ namespace ReversiGame
         private bool twoPlayerMode = false;
         private System.Windows.Forms.Timer aiTimer;
 
+        private Label scoreLabel;
+        private Label statusLabel;
+
         public Form1()
         {
             InitializeComponent();
 
             this.Text = "Reversi Game - MiniMax AI or Two Player";
             this.DoubleBuffered = true;
-            this.ClientSize = new Size(CellSize * 8, CellSize * 8 + OffsetY);
+            this.ClientSize = new Size(CellSize * 8, CellSize * 8 + OffsetY + 30);
 
             gameBoard = new GameBoard();
             aiPlayer = new AIPlayer(3); // Default difficulty
@@ -39,7 +42,6 @@ namespace ReversiGame
 
         private void SetupUI()
         {
-            // Difficulty selector
             difficultyBox = new ComboBox
             {
                 Location = new Point(10, 10),
@@ -60,7 +62,6 @@ namespace ReversiGame
             };
             Controls.Add(difficultyBox);
 
-            // Two-player checkbox
             twoPlayerModeBox = new CheckBox
             {
                 Text = "Two Player Mode",
@@ -70,12 +71,11 @@ namespace ReversiGame
             twoPlayerModeBox.CheckedChanged += (s, e) =>
             {
                 twoPlayerMode = twoPlayerModeBox.Checked;
-                aiTimer.Stop(); // Stop AI if switching
+                aiTimer.Stop();
                 Invalidate();
             };
             Controls.Add(twoPlayerModeBox);
 
-            // Restart button
             restartButton = new Button
             {
                 Text = "Restart",
@@ -90,6 +90,20 @@ namespace ReversiGame
                 Invalidate();
             };
             Controls.Add(restartButton);
+
+            scoreLabel = new Label
+            {
+                Location = new Point(400, 12),
+                AutoSize = true
+            };
+            Controls.Add(scoreLabel);
+
+            statusLabel = new Label
+            {
+                Location = new Point(550, 12),
+                AutoSize = true
+            };
+            Controls.Add(statusLabel);
         }
 
         private void SetupAITimer()
@@ -146,16 +160,10 @@ namespace ReversiGame
                         g.FillEllipse(Brushes.Black, c * CellSize + 5, r * CellSize + 5, CellSize - 10, CellSize - 10);
                     else if (cell == Player.White)
                         g.FillEllipse(Brushes.White, c * CellSize + 5, r * CellSize + 5, CellSize - 10, CellSize - 10);
-                    else if (gameBoard.IsValidMove(r, c, currentPlayer))
+                    else if (!gameBoard.IsGameOver() && gameBoard.IsValidMove(r, c, currentPlayer))
                         g.FillEllipse(Brushes.LightGreen, c * CellSize + 20, r * CellSize + 20, CellSize - 40, CellSize - 40);
                 }
             }
-
-            g.ResetTransform();
-
-            // Optional: draw turn indicator
-            string status = gameBoard.IsGameOver() ? "Game Over" : $"Current Turn: {currentPlayer}";
-            g.DrawString(status, Font, Brushes.Black, new PointF(10, 5));
         }
     }
 }

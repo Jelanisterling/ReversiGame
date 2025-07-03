@@ -5,6 +5,14 @@ namespace ReversiGame
 {
     public class GameBoard
     {
+        public int CountDiscs(Player player)
+        {
+            int count = 0;
+            foreach (var cell in Board)
+                if (cell == player) count++;
+            return count;
+        }
+
         public Player[,] Board { get; private set; }
         private readonly int[][] directions = new int[][]
         {
